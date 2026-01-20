@@ -18,11 +18,11 @@ import java.util.concurrent.Future;
 
 @Slf4j
 public class DownloadManager {
-    private final HashMap<String, UUID> downloadFiles = new HashMap<>();
-    private final HashMap<UUID, Double> downloadProgress = new HashMap<>();
+
+    private final HashMap<String, Double> downloadProgress = new HashMap<>();
+    private final List<Future<?>> tasks = new ArrayList<>();
 
     private final ExecutorService executor;
-    private final List<Future<?>> tasks = new ArrayList<>();
 
     public DownloadManager(int maxConcurrentDownloads) {
         this.executor = Executors.newFixedThreadPool(maxConcurrentDownloads);
@@ -49,8 +49,6 @@ public class DownloadManager {
                     fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1);
                 }
 
-                downloadFiles.put(fileName, UUID.randomUUID());
-
                 Path savePath = Paths.get(saveDir);
                 Files.createDirectories(savePath.getParent());
 
@@ -64,7 +62,7 @@ public class DownloadManager {
                     while ((bytesRead = inputStream.read(buffer)) != -1) {
                         outputStream.write(buffer, 0, bytesRead);
                         totalRead += bytesRead;
-                        downloadProgress.put(downloadFiles.get(fileName), (double) totalRead / contentLength);
+                        downloadProgress.put(fileName, (double) totalRead / contentLength);
                     }
                     log.info("Download of {} complete. {} bytes downloaded.", fileName, totalRead);
                 }
@@ -100,7 +98,7 @@ public class DownloadManager {
     }
 
     public double getDownloadProgress(String fileName) {
-        return downloadProgress.getOrDefault(downloadFiles.getOrDefault(fileName, UUID.randomUUID()), 0.0);
+        return downloadProgress.getOrDefault(fileName, 0.0);
     }
 
 }
