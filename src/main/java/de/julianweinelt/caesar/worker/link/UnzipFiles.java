@@ -15,6 +15,9 @@ import java.util.zip.ZipInputStream;
 @Slf4j
 public class UnzipFiles {
 
+    private UnzipFiles() {
+    }
+
     public static void unzip(String target, String destination, CopyOption... copyOptions) {
         try {
             log.info("Unzipping {} to {}", target, destination);
