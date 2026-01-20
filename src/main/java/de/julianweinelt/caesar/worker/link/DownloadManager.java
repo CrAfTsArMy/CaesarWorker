@@ -93,10 +93,14 @@ public class DownloadManager {
                 log.error("Error waiting for download: {}", e.getMessage());
             }
         });
+    }
+
+    public void shutdown() {
         executor.shutdown();
     }
 
     public double getDownloadProgress(String fileName) {
         return downloadProgress.getOrDefault(downloadFiles.getOrDefault(fileName, UUID.randomUUID()), 0.0);
     }
+
 }
